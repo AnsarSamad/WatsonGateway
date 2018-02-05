@@ -10,6 +10,7 @@ var users = require('./routes/users');
 var cavion = require('./routes/cavion');
 var login = require('./routes/login');
 var validate = require('./routes/validate');
+var watson = require('./routes/watson');
 
 var app = express();
 
@@ -43,6 +44,7 @@ app.use('/users', users);
 app.use('/cavion',cavion);
 app.use('/login',login);
 app.use('/validate',validate);
+app.use('/watson',watson);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

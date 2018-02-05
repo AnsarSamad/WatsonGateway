@@ -8,7 +8,10 @@ router.get('/', function(req, res, next) {
     var watson = require('watson-developer-cloud');
 
     var conversation = watson.conversation({
-
+    username: 'ce4418be-0dc5-4301-8374-5a37c680c68b',
+    password: '7TEAfp4bo0Vv',
+    version: 'v1',
+    version_date: '2017-05-26'
     });
 
     conversation.message({
