@@ -8,10 +8,10 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var cavion = require('./routes/cavion');
 var login = require('./routes/login');
 var validate = require('./routes/validate');
 var watson = require('./routes/watson');
+var cavion  = require('./routes/cavion')
 
 var app = express();
 
@@ -42,10 +42,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
-app.use('/cavion',cavion);
 app.use('/login',login);
 app.use('/validate',validate);
 app.use('/watson',watson);
+app.use('/cavion',cavion);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -1,5 +1,8 @@
 var watson = require('watson-developer-cloud');
 const NodeCache = require( "node-cache" );
+
+
+
 const myCache = new NodeCache();
 
 var conversation = watson.conversation({
@@ -10,7 +13,10 @@ version_date: '2017-05-26'
 });
 
 var getResponse = (userInput)=>{
-
+    //if user input is conversation_start , means user entered in the chat window , reset cache
+    if(userInput ==  'conversation_start'){
+        value = myCache.del( "previous-context" );
+    }
     return new Promise((resolve,reject)=>{
         //try sychronous mode
         previous_context = myCache.get( "previous-context" );
@@ -26,7 +32,8 @@ var getResponse = (userInput)=>{
                 if (err){
                     console.log('error:', err);
                     reject('Error Occured..'+err);
-                } else{                    
+                } else{
+
                     myCache.set("previous-context",response.context,(err,success)=>{
                         if(err){
                             console.log('error occured while caching response');
@@ -34,8 +41,8 @@ var getResponse = (userInput)=>{
                             console.log('watson context stored in cache successfully');
                         }
                     })
-                    console.log(JSON.stringify(response, null, 2));
-                    resolve(response.output.text[0]);
+                    
+                    resolve({"output":response.output.text,"action":response.output.action,"data":{"member":response.output.member}});
                 }
                 
             });
