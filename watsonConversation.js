@@ -52,3 +52,4 @@ var getResponse = (userInput)=>{
     
 
 module.exports.getWatsonResponse = getResponse;
+module.exports.getCache = myCache;
