@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request')
+var conversation = require('../watsonConversation');
 var myCache = require('../watsonConversation').getCache;
 
 
@@ -15,11 +16,11 @@ router.post('/', function(req, res, next) {
         .then((cavionresponse)=>{
             res.json(cavionresponse);
         })
-    }else if(action == 'do_askmfa'){
-        getMfa(member)
-        .then((cavionresponse)=>{
-            res.json(cavionresponse);
-        })
+    }else if(action == 'do_verify_mfa'){
+       conversation.getWatsonResponse(action)
+       .then((mfavalidationresponse)=>{
+        res.json(mfavalidationresponse);
+       })
     }
 });
 
@@ -35,13 +36,32 @@ var isValidMember  = (memberNumber)=>{
         request.post(options,(err,httpResponse,body)=>{
                 if(!err){
                     console.log('cavion gateway return:'+body);
-                    cavionresponse="Welcome "+body+" , please answer your challenge question";
-                    action="do_askmfa"
-                    if(body ==  'false'){
-                        cavionresponse="Sorry, you are not a valid member for cavion product";
-                        action = "";
+                    isValidMemberNumber = "false";
+                    if(body != 'false'){
+                        isValidMemberNumber="true"
+                        previous_context = myCache.get( "previous-context" );   
+                        previous_context.isValidMemberNumber=isValidMemberNumber;   
+                        previous_context.membername=body; 
+                        myCache.set( "previous-context" ,previous_context);
+                        getMfa(memberNumber)
+                        .then((usermfa)=>{
+                            var mfa = usermfa.split("|");
+                            cavionresponse = " \n "+mfa[0]
+                            previous_context.usermfa_question=mfa[0];
+                            previous_context.usermfa_answer=mfa[1];
+                            myCache.set( "previous-context" ,previous_context);
+
+                            conversation.getWatsonResponse("ask_mfa")
+                            .then((watsonmfaresponse)=>{
+                                resolve(watsonmfaresponse);
+                            })
+                        })
+                        // resolve({"output":[cavionresponse],"action":action,"data":{"member":memberNumber}});
                     }
-                    resolve({"output":[cavionresponse],"action":action,"data":{"member":memberNumber}});
+
+                                      
+                       
+                    
                 }else{
                     console.log('cannot communicate with cavion:'+err)
                     reject(err);
@@ -69,10 +89,9 @@ var getMfa  = (memberNumber)=>{
                         }else{
                             console.log('user mfa stored in cache successfully');
                         }
-                    })
-                    var mfa = body.split("|");
-                    cavionresponse = " \n "+mfa[0]
-                    resolve({"output":[cavionresponse]});
+                    }) 
+                   
+                    resolve(body);
                 }else{
                     console.log('cannot communicate with cavion:'+err)
                     reject(err);
