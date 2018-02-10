@@ -33,16 +33,15 @@ var getResponse = (userInput)=>{
                     console.log('error:', err);
                     reject('Error Occured..'+err);
                 } else{
-                    console.log('watson response is:'+response.output)
+                    console.log('watson response is:'+JSON.stringify(response.output))
                     myCache.set("previous-context",response.context,(err,success)=>{
                         if(err){
                             console.log('error occured while caching response');
                         }else{
                             console.log('watson context stored in cache successfully');
                         }
-                    })
-                    
-                    resolve({"output":response.output.text,"action":response.output.action,"data":{"member":response.output.member}});
+                    })                   
+                    resolve({"output":response.output.text,"action":response.output.action,"data":response.output.data});
                 }
                 
             });

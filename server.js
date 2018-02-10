@@ -12,6 +12,7 @@ var login = require('./routes/login');
 var validate = require('./routes/validate');
 var watson = require('./routes/watson');
 var cavion  = require('./routes/cavion')
+var dyncrm  = require('./routes/dynamiccrm')
 
 var app = express();
 
@@ -46,6 +47,7 @@ app.use('/login',login);
 app.use('/validate',validate);
 app.use('/watson',watson);
 app.use('/cavion',cavion);
+app.use('/dyncrm',dyncrm);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
