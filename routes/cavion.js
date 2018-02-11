@@ -25,14 +25,24 @@ router.post('/', function(req, res, next) {
             res.json(cavionresponse);
         })
     }else if(action == 'do_verify_mfa'){
+        console.log('am in do_verify_mfa action :'+member);
         const usermfa_answer  = data.usermfa_answer;
         const user_entered_mfa  =  data.user_entered_mfa;
         console.log('usermfa_answer:'+usermfa_answer)
         console.log('user_entered_mfa:'+user_entered_mfa)
+        resData = [];
         if(usermfa_answer == user_entered_mfa ){
             // cache mfa verification in previous_context
             // trigget pin reset
-            res.json({"output":['You have successfully validated with Finbot']})
+            console.log('mfa verified , doing pin reset');
+            resData.push('You have successfully validated with Finbot');
+            resetPinCount(member)
+            .then((pinresetResponse)=>{
+                console.log('resetpincount return:'+pinresetResponse)
+                resData.push('We have reset the invalid login count for you ');
+                resData.push('please try again with your internet banking login');
+                res.json({"output":resData})
+            })
         }else{
             res.json({"output":['Sorry you are not a valid member']})
         }
@@ -121,5 +131,25 @@ var getMfa  = (memberNumber)=>{
     )})
 } 
 
+var resetPinCount = (member)=>{
+    var options = {
+        url:'http://localhost:8080/userdata/resetmemberinvalidlogincount',
+        method: 'POST',
+        contentType:'application/json' ,
+        form: {'member': member}
+    }
+    console.log('calling reset bad pin count for memebr:'+member);
+    return new Promise((resolve,reject)=>{
+        request.post(options,(err,httpResponse,body)=>{
+                if(!err){
+                    console.log('cavion serive return for pin reset'+body);
+                    resolve(body);
+                }else{
+                    console.log('cannot communicate with cavion:'+err)
+                    reject(err);
+                }                
+            }
+    )})
+}
 
 module.exports = router;
