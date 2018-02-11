@@ -23,17 +23,14 @@ var getResponse = (userInput)=>{
         if(previous_context ==  undefined){
             previous_context={}
         }
-        console.log('previous context:'+JSON.stringify(previous_context));
         conversation.message({
             workspace_id : '2164b471-3806-4da2-8411-dc2ff0b24832',
             input : {'text': userInput},
             context : previous_context
             },  (err, response)=> {
                 if (err){
-                    console.log('error:', err);
                     reject('Error Occured..'+err);
                 } else{
-                    console.log('watson response is:'+JSON.stringify(response.output))
                     myCache.set("previous-context",response.context,(err,success)=>{
                         if(err){
                             console.log('error occured while caching response');
