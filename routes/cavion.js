@@ -40,7 +40,7 @@ router.post('/', function(req, res, next) {
             .then((pinresetResponse)=>{
                 console.log('resetpincount return:'+pinresetResponse)
                 resData.push('We have reset the invalid login count for you ');
-                resData.push('please try again with your internet banking login');
+                resData.push('Please try again with your internet banking login');
                 res.json({"output":resData})
             })
         }else{

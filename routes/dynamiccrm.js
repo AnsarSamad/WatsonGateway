@@ -2,13 +2,21 @@ var express = require('express');
 var router = express.Router();
 var request = require('request')
 var conversation = require('../watsonConversation');
+var myCache = require('../watsonConversation').getCache;
 
 /* GET home page. */
 router.post('/addnewcase', function(req, res, next) {
   issue_title = req.body.issue_title;
   issue_title = "FinBot - First Fiancial demo - "+issue_title
   issue_desc = issue_title;
+  ticket_number = req.body.ticket_number;
   console.log('got call from client to add new case in CRM');
+  
+  //set the ticket number in the cache
+  previous_context = myCache.get( "previous-context" );   
+  previous_context.ticket_number = ticket_number;
+  myCache.set( "previous-context" ,previous_context);
+
   //returnn watson respons then create crm case
   conversation.getWatsonResponse('ticket  created')
   .then((watsonresponse)=>{
