@@ -6,6 +6,7 @@ var conversation = require('../watsonConversation');
 /* GET home page. */
 router.post('/addnewcase', function(req, res, next) {
   issue_title = req.body.issue_title;
+  issue_title = "FinBot - First Fiancial demo - "+issue_title
   issue_desc = issue_title;
   console.log('got call from client to add new case in CRM');
   //returnn watson respons then create crm case
